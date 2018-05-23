@@ -3,7 +3,7 @@ import { Route, NavLink } from 'react-router-dom';
 import { Layout, Menu, Icon } from 'antd';
 import 'antd/dist/antd.css';
 import Home from '../home';
-
+import About from '../about';
 import Wallet from '../wallet';
 import Address from '../address';
 import Logo from '../../logogradient.png';
@@ -53,13 +53,21 @@ class App extends React.Component {
                 <span>Ledger Wallet</span>{' '}
               </NavLink>
             </Menu.Item>
+
+            <Menu.Item key="3">
+              {' '}
+              <NavLink to="/bounty">
+                <Icon type="desktop" />
+                <span>Bounty</span>{' '}
+              </NavLink>
+            </Menu.Item>
           </Menu>
         </Sider>
         <Layout>
           <Header style={{ background: '#1e3d5a', padding: 0 }} />
           <Content style={{ margin: '0 16px' }}>
             <Route exact path="/" component={Home} />
-
+            <Route exact path="/bounty" component={About} />
             <Route exact path="/wallet" component={Wallet} />
             <Route path="/wallet/:address" component={Address} />
           </Content>

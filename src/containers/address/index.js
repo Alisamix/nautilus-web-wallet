@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Oyster from '../../oyster/index';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import TransactionsWidget from './TransactionsWidget';
+import WrappedSendModal from './SendModal';
 
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -13,19 +14,11 @@ const formatter = new Intl.NumberFormat('en-US', {
   // and is usually already 2
 });
 const openClipboardNotification = () => {
+  Oyster.lock();
   notification.open({
     message: 'Copied to clipboard!',
     description: 'Your address is in your clipboard.',
   });
-};
-const sendMoney = () => {
-  Oyster.sendPRL(
-    '0x0f55366ef4c223aceC96d449804Bd33D8D2e5282',
-    '0x1F7a7cEAaCf7e4EDF18aB34CB2570e71612AE5cb',
-    2,
-
-    1,
-  );
 };
 
 class Address extends Component {
@@ -35,6 +28,7 @@ class Address extends Component {
       address: props.match.params.address,
       balance: 0.0,
       price: undefined,
+      visible: false,
       transactions: null,
     };
 
@@ -55,6 +49,10 @@ class Address extends Component {
 
     Oyster.getPrice().then(data => this.setState({ price: data[0].price_usd }));
   }
+
+  openModal = () => {
+    this.setState({ visible: true });
+  };
 
   render() {
     console.log(this.state.price);
@@ -78,7 +76,10 @@ class Address extends Component {
               </Breadcrumb.Item>
               <Breadcrumb.Item>{this.state.address}</Breadcrumb.Item>
             </Breadcrumb>
-
+            <WrappedSendModal
+              visible={this.state.visible}
+              address={this.props.match.params.address}
+            />
             <br />
             <h4>
               {this.state.price ? formatter.format(this.state.price * this.state.balance) : null}
@@ -86,7 +87,7 @@ class Address extends Component {
             <h1 style={{ fontSize: 32 }}>{`${this.state.balance}  PRL`}</h1>
 
             <Button.Group size="large">
-              <Button type="primary" icon="caret-up" onClick={sendMoney}>
+              <Button type="primary" icon="caret-up" onClick={this.openModal}>
                 Send PRL
               </Button>{' '}
               <CopyToClipboard text={this.state.address} onCopy={openClipboardNotification}>
